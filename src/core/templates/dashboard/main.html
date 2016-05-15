@@ -1,0 +1,28 @@
+{% extends "layouts/default.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="col-sm-offset-2 col-sm-8">
+    <div class="panel panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">Dashboard</h3>
+        </div>
+        <table class="table table-hover">
+            <tbody>
+                <tr>
+                    <td><strong>Total issues:</strong></td>
+                    <td><strong>{{ total }}</strong></td>
+                </tr>
+                <tr>
+                    <td>Issues resolved:</td>
+                    <td>{{ resolved }}</td>
+                </tr>
+                <tr>
+                    <td>Still to be resolved:</td>
+                    <td>{{ un_resolved }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

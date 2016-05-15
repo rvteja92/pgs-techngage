@@ -31,7 +31,7 @@ class IssueStatus(models.Model):
 class Issue(models.Model):
     issue_id    = models.AutoField(primary_key=True)
     status  = models.ForeignKey(IssueStatus)
-    title   = models.CharField(max_length=40)
+    title   = models.CharField(max_length=256)
     content = models.TextField(max_length=1024)
     pic     = models.CharField(max_length=80, blank=True)
     latitude    = models.CharField(max_length=20, blank=True)

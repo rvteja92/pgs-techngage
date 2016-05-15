@@ -119,3 +119,18 @@ def saveDepartment(request):
             except Exception as e:
                 traceback.print_exc()
     raise Http404()
+
+def dashboard(request):
+    print('Here in the dashboard')
+    if request.method == 'GET':
+        total   = Issue.objects.count()
+        resolved    = Issue.objects.filter(status=6).count()
+        spam    = Issue.objects.filter(status=3).count()
+        un_resolved = total - resolved - spam
+        context = {
+            'total': total,
+            'resolved': resolved,
+            'un_resolved': un_resolved,
+        }
+        return render(request, 'dashboard/main.html', context)
+    raise Http404()

@@ -3,7 +3,7 @@ from django.conf.urls import url
 from . import views, grievance
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
+    url(r'^$', grievance.dashboard, name='dashboard_home'),
     url(r'^register', views.register, name='register'),
     url(r'^login', views.login, name='login'),
     url(r'^grievance/add', grievance.add, name='add'),
@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^grievance/review/(?P<grievance_id>[0-9]+)', grievance.review, name='review'),
     url(r'^department/all', grievance.departments, name='dept_all'),
     url(r'^department/save', grievance.saveDepartment, name='dept_save'),
+    url(r'^dashboard', grievance.dashboard, name='dashboard_main'),
 ]
