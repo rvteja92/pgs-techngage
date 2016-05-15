@@ -1,0 +1,32 @@
+{% extends "layouts/default.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Issue</th>
+                <th>Status</th>
+                <th>Category</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for issue in all_issues %}
+            <tr>
+                <td><a href="{% url 'core:view' issue.issue_id %}">{{issue.issue_id}}</a></td>
+                <td><a href="{% url 'core:view' issue.issue_id %}"><strong>{{issue.title}}</strong><br></a> {{ issue.content }}</td>
+                <td>{{issue.status.status}}</td>
+                <td>
+                    {% if issue.category %}
+                    {{ issue.category.name }}
+                    {% else %}
+                    Uncategorized
+                    {% endif %}
+                </td>
+                <td><a href="{% url 'core:review' issue.issue_id %}">Review</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

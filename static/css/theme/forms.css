@@ -1,0 +1,57 @@
+.form-group > label
+{
+    font-weight: normal;
+}
+
+.btn
+{
+    background-image: none;
+    border-radius: 2px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+}
+
+.btn-success
+{
+    background-color: #5CB85C;
+}
+
+.addon-error:hover {
+    color: #d00000;
+}
+
+.popover
+{
+    max-width: 100%;
+    min-width: 300px;
+    color: #000;
+}
+
+.form-control
+{
+    border-radius: 2px;
+}
+
+.form-group > label
+{
+    font-weight: normal;
+}
+
+.addon-error:hover {
+    color: #d00000;
+}
+
+.popover
+{
+    max-width: 100%;
+    min-width: 300px;
+    color: #000;
+}
+
+.form-control{
+    border-radius: 2px;
+}
+
+.form-link{
+    padding-bottom: 15px;
+}

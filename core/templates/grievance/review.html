@@ -1,0 +1,57 @@
+{% extends "layouts/default.html" %}
+{% load staticfiles %}
+
+{% block content %}
+    {% if message != '' %}
+    <div class="alert {{messageStatus}} alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        {{ message }}
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">#{{grievance.issue_id}} {{grievance.title}}</h3>
+        </div>
+        <div class="panel-body">
+            {{grievance.content}}
+        </div>
+        <ul class="list-group">
+            <li class="list-group-item">
+            <strong>Address:</strong><br>
+            {% if grievance.geo_address %}
+                {% for addr in grievance.geo_address.0.address_components %}
+                    {{ addr.long_name }}<br>
+                {% endfor %}
+            {% endif %}
+            </li>
+            <form class="form-inline" action="" method="post">
+                <input name="issue_id" type="hidden" value="{{grievance.issue_id}}" />
+                <li class="list-group-item"><strong>Status:</strong><br>
+                    {% csrf_token %}
+                    <select name="status_id">
+                        {% for status in statuses %}
+                            {% if grievance.status.id == status.id %}
+                                <option value="{{status.id}}" selected="True">{{status.status}}</option>
+                            {% else  %}
+                                <option value="{{status.id}}" >{{status.status}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </li>
+                <li class="list-group-item"><strong>Category:</strong><br>
+                    <select name="category_id" >
+                        <option value="0" selected="True">Uncategorized</option>
+                        {% for department in departments %}
+                            {% if grievance.category and grievance.category.dept_id == department.dept_id %}
+                                <option value="{{department.dept_id}}" selected="True">{{department.name}}</option>
+                            {% else %}
+                                <option value="{{department.dept_id}}" >{{department.name}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <button class="btn btn-primary" type="submit">Save changes</button>
+                </li>
+            </form>
+        </ul>
+    </div>
+{% endblock %}

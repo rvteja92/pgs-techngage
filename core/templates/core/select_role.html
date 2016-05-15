@@ -1,0 +1,9 @@
+{% extends "layouts/default.html" %}
+
+{% block user_role %}
+    <select name="user_role">
+        {% for role in role_options %}
+            <option id="user_role_{{role.id}}" value="{{role.id}}" />
+        {% endfor %}
+    </select>
+{% endblock %}
