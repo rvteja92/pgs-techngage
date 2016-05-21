@@ -1,11 +1,9 @@
 from __future__ import absolute_import
 
-from .celeryapp import app
 from .geo.googlegeo import getAddressObject
 import os, sys, django
 import logging
-
-
+from pgs.celeryapp import app
 project_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
 
 sys.path.append(project_path)

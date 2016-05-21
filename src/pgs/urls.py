@@ -16,7 +16,6 @@ from django.conf.urls import include, url
 from rest_framework import routers
 from core  import grievance
 from django.contrib import admin
-from accounts import views as accview
 
 
 router = routers.DefaultRouter()
