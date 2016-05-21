@@ -1,4 +1,4 @@
 src/sit/tracker.py
-*.log
+src/logs/*.log
 src/components/demos.py
 
