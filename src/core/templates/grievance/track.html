@@ -29,6 +29,11 @@
 	            	<span class="glyphicon glyphicon-time"></span>
 	            	The issue has been put on hold.
 	            </div>
+	        {% elif status.id == 8 %}
+            	<div class="text-danger">
+	            	<span class="glyphicon glyphicon-warning-sign"></span>
+	            	The issue cannot be resolved.
+	            </div>
             {% else %}
             	<ul class="progress-indicator">
             		{% if status.id >= 1 %}

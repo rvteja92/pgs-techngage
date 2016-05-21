@@ -5,6 +5,7 @@ from core.forms import GrievanceForm, DepartmentForm
 from django.http import Http404, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 
 import traceback, logging
 
@@ -12,10 +13,10 @@ from components.tasks import *
 
 from rest_framework import viewsets
 from .serializers import IssueSerializer
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-
+from accounts.helpers import authorization
 
 logger = logging.getLogger(__name__)
+
 
 def add(request):
     if not request.user.is_authenticated():
@@ -40,8 +41,7 @@ def add(request):
                     # All google geo tasks for Issues go into queue 'issuegeo'
                     getaddressfor.apply_async([new_grievance.issue_id], queue = 'issuegeo')
 #                     new_grievance.geo_address = googlegeo.getAddressObject(new_grievance.latitude, new_grievance.longitude)
-                    
-                    
+                                        
             except Exception as e:
                 context = {
                         'alert_type': 'alert-danger',
@@ -82,19 +82,15 @@ def view(request, grievance_id):
     if request.method == 'GET':
         print('Grievance ID: ' + grievance_id)
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
-        if grievance.latitude and grievance.longitude and not grievance.geo_address:
-            grievance.geo_address = googlegeo.getAddressObject(grievance.latitude, grievance.longitude)
-            try:
-                grievance.save()
-            except Exception as e:
-                #TODO log that address object could not be stored instead of printing
-                traceback.print_exc()
+        if grievance.latitude and grievance.longitude and grievance_id > 0: 
+            getaddressfor.apply_async([grievance_id], queue = 'issuegeo')
+            
         return render(request, 'grievance/view.html', {'grievance': grievance})
     else:
         raise Http404()
 
 def review(request, grievance_id):
-    if isAdmin(request):
+    if authorization.isAdmin(request):
         message = ''
         messageStatus = ''
         if request.method == 'POST':
@@ -118,13 +114,9 @@ def review(request, grievance_id):
                 messageStatus = 'alert-danger'
         print('Grievance ID: ' + grievance_id)
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
-        if grievance.latitude and grievance.longitude and not grievance.geo_address:
-            try:
-                grievance.geo_address = googlegeo.getAddressObject(grievance.latitude, grievance.longitude)
-                grievance.save()
-            except Exception as e:
-                #TODO log that address object could not be stored instead of printing
-                traceback.print_exc()
+        if grievance.latitude and grievance.longitude and grievance_id > 0: 
+            getaddressfor.apply_async([grievance_id], queue = 'issuegeo')
+            
         return render(request, 'grievance/review.html', {'grievance': grievance, 'statuses': IssueStatus.objects.all(),
                                     'departments': Department.objects.all(), 'message': message, 'messageStatus': messageStatus})
     raise PermissionDenied
@@ -146,7 +138,7 @@ def departments(request):
                                         'un_resolved'   : un_resolved,
                                     }))
         
-        if isAdmin(request):
+        if authorization.isAdmin(request):
             dept_form   = DepartmentForm()
         else:
             dept_form   = None
@@ -154,7 +146,7 @@ def departments(request):
     raise Http404()
 
 def saveDepartment(request):
-    if isAdmin(request):
+    if authorization.isAdmin(request):
         if request.method == 'POST':
             form = DepartmentForm(request.POST)
             if form.is_valid():
@@ -170,9 +162,10 @@ def dashboard(request):
     print('Here in the dashboard')
     if request.method == 'GET':
         total   = Issue.objects.count()
-        resolved    = Issue.objects.filter(status=6).count()
-        spam    = Issue.objects.filter(status=3).count()
-        un_resolved = total - resolved - spam
+        resolved    = Issue.objects.filter(status=5).count()
+        spam    = Issue.objects.filter(status=6).count()
+        cant    = Issue.objects.filter(status=8).count()
+        un_resolved = total - resolved - spam - cant
         context = {
             'total': total,
             'resolved': resolved,

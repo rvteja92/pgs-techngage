@@ -14,7 +14,8 @@ def getAddressObject(latitude, longitude):
         return gmaps.reverse_geocode((latitude, longitude))
     except Exception as e:
         logging.error('Could not get address for \'issue\' ' + str(e))
-        return None
+        raise Exception
+    return None
 
 def testLib():
     print('Woo hoo!!! Check successful.')
