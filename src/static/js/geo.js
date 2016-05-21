@@ -4,13 +4,7 @@ $(document).ready(function(){
 
 function init()
 {
-    $('body').on('click','#getLocation', function(e)
-    {
-        e.stopPropagation();
-        e.stopImmediatePropagation();
-        getLocation();
-        return false;
-    });
+    getLocation();
 }
 
 function getLocation()
@@ -32,16 +26,16 @@ function getLocation()
         {
             case error.PERMISSION_DENIED:
     			// User denied access to location. Perhaps redirect to alternate content?
-    			alert('Permission was denied');
+    			console.log('Location: Permission was denied');
     			break;
     		case error.POSITION_UNAVAILABLE:
-    			alert('Position is currently unavailable.');
+    			console.log('Location: Position is currently unavailable.');
     			break;
     		case error.PERMISSION_DENIED_TIMEOUT:
-    			alert('User took to long to grant/deny permission.');
+    			console.log('Location: User took to long to grant/deny permission.');
     			break;
     		case error.UNKNOWN_ERROR:
-    			alert('An unknown error occurred.')
+    			console.log('Location: An unknown error occurred.')
     			break;
         }
     }

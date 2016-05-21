@@ -25,4 +25,23 @@
         </table>
     </div>
 </div>
+<div class="col-sm-12">
+    <div class="row">
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Add an issue through <a class="alert-link" href="{% url 'core:add' %}">New issue</a>
+        </div>
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            Add an issue through twitter by tweeting with hashtag #pgsissue
+        </div>
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            View all issues through <a class="alert-link" href="{% url 'core:all' %}">all issues</a>
+        </div><div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            To review (change status or category) click on review against the issue in all issues page
+        </div>
+    </div>
+</div>
 {% endblock %}

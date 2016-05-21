@@ -2,18 +2,20 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
+from django.conf import settings
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0006_department'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('core', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
             model_name='issue',
-            name='category',
-            field=models.ForeignKey(to='core.Department', null=True),
+            name='user',
+            field=models.ForeignKey(blank=True, null=True, to=settings.AUTH_USER_MODEL),
         ),
     ]

@@ -1,21 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from jsonfield import JSONField
 
-class UserRole(models.Model):
-    role_name   = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.role_name
-
-class UserProfile(models.Model):
-    user_id  = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=40)
-    password = models.CharField(max_length=40)
-    role = models.ForeignKey(UserRole)
-
-    def __str__(self):
-        return "[Username: " + self.username + ", Role: " + self.role_name + "]"
 
 class Department(models.Model):
     dept_id = models.AutoField(primary_key=True)
@@ -39,8 +25,10 @@ class Issue(models.Model):
     geo_address     = JSONField(blank=True)
     category    = models.ForeignKey(Department, null=True)
 
-    #TODO make user compulsory after implementing authenticaton
-    user    = models.ForeignKey(UserProfile, blank=True)
+    """
+    TODO Make user compulsory - once user models are generated from tweets 
+    """
+    user    = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
 
     def __str__(self):
         return '[Title: '+ self.title + ', Content: ' + self.content + ', User: ' + self.user.username + ']'

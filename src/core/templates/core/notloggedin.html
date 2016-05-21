@@ -1,0 +1,11 @@
+{% extends "layouts/default.html" %}
+
+{% block content %}
+	<div class="alert alert-warning" role="alert">
+  		<strong>Access denied!</strong> You need to be logged in to access this page.
+	  	<div>
+		  	<a class="btn btn-primary navbar-btn" href="{% url 'accounts:userlogin' %}" role="button">Login</a>
+			<a class="btn btn-success navbar-btn" href="{% url 'accounts:userregistration' %}" role="button">Register</a>
+		</div>
+	</div>
+{% endblock %}

@@ -1,16 +1,19 @@
 import googlemaps
-from datetime import datetime
+import logging
 
-import traceback
+from .configuration import parser
 
-api_key = 'AIzaSyACRN4Q1nINVKH98DqFK7XIDaBb9IWs0Hs'
+
+config = parser.getConfigParser()
+
+api_key = config.get('GOOGLE', 'API_KEY')
 
 def getAddressObject(latitude, longitude):
     try:
         gmaps = googlemaps.Client(key=api_key)
         return gmaps.reverse_geocode((latitude, longitude))
     except Exception as e:
-        #traceback.print_exc()
+        logging.error('Could not get address for \'issue\' ' + str(e))
         return None
 
 def testLib():

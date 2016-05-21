@@ -1,0 +1,30 @@
+libraries
+=========
+Python-NLTK
+Tweepy (Twitter API)
+JSONField (https://github.com/bradjasper/django-jsonfield)
+Scikit-image (image analysis)
+Geolocation API - Google Maps Services (https://github.com/googlemaps/google-maps-services-python/)
+djangorestframework
+markdown
+django-filter
+django-crispy-forms
+django-guardian
+Celery
+librabbitmq
+
+other
+=====
+PostgreSQL DB
+nginx
+gunicorn
+Python3 in Django 1.8
+Android app.
+TwitterOAuth
+
+OS
+==
+libffi-dev
+pip3
+rabbit-mq
+

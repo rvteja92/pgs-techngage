@@ -13,8 +13,19 @@ Including another URLconf
     1. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+from rest_framework import routers
+from core  import grievance
 from django.contrib import admin
+from accounts import views as accview
+
+
+router = routers.DefaultRouter()
+router.register(r'^issues', grievance.IssueViewSet)
 
 urlpatterns = [
     url(r'^', include('core.urls', namespace='core')),
+    url(r'^', include('accounts.urls', namespace='accounts')),
+    url(r'^api/', include(router.urls)),
+    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^admin/', include(admin.site.urls)),
 ]

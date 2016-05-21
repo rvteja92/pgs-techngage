@@ -1,61 +1,41 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from core.models import UserRole, UserProfile
-from core.forms import RegistrationForm
 
 import traceback
 
-def index(request):
-    all_roles = UserRole.objects.all()
-    role_options = []
-    for role in all_roles:
-        role_options.append({'id': role.id, 'role_name': role.role_name})
-    return render(request, 'core/index.html', {'role_options': role_options})
-
-def login(request):
-    if request.method != 'POST':
-        context = {
-                    'alert_type': 'alert-danger',
-                    'content': 'Invalid request!!'
-                }
-        return render(request, 'core/message.html', context)
-
-    user_name = request.POST['username']
-    user_password = request.POST['password']
-    user = authenticate(username= user_name, password = user_password)
-
-    if user:
-        if user.is_active:
-            profile = UserProfile.objects.filter(id=user.id).get()
-            login(reqeust, profile)
-            return HttpResponseRedirect('/home')
-
-    return render(request, 'core/login.html', {'username': request.POST['username']})
-
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            try:
-                new_user = form.save(commit=False)
-                new_user.save()
-            except Exception as e:
-                context = {
-                        'alert_type': 'alert-danger',
-                        'content': 'Registration failed!! Unable to save.'
-                    }
-                print(type(new_user).__name__)
-                traceback.print_exc()
-                return render(request, 'core/message.html', context)
-            context = {
-                    'alert_type': 'alert-success',
-                    'content': 'Registration successful!!'
-                }
-            return render(request, 'core/message.html', context)
-    else:
-        form = RegistrationForm()
-
-    return render(request, 'core/register.html', {'form': form})
+# def index(request):
+#     all_roles = UserRole.objects.all()
+#     role_options = []
+#     for role in all_roles:
+#         role_options.append({'id': role.id, 'role_name': role.role_name})
+#     return render(request, 'core/index.html', {'role_options': role_options})
+# 
+# 
+# 
+# def register(request):
+#     if request.method == 'POST':
+#         form = RegistrationForm(request.POST)
+#         if form.is_valid():
+#             try:
+#                 new_user = form.save(commit=False)
+#                 new_user.save()
+#             except Exception as e:
+#                 context = {
+#                         'alert_type': 'alert-danger',
+#                         'content': 'Registration failed!! Unable to save.'
+#                     }
+#                 print(type(new_user).__name__)
+#                 traceback.print_exc()
+#                 return render(request, 'core/message.html', context)
+#             context = {
+#                     'alert_type': 'alert-success',
+#                     'content': 'Registration successful!!'
+#                 }
+#             return render(request, 'core/message.html', context)
+#     else:
+#         form = RegistrationForm()
+# 
+#     return render(request, 'core/register.html', {'form': form})
 
 # def register(request):
 #     if request.method != 'POST':

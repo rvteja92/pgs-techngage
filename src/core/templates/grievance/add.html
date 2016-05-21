@@ -18,19 +18,9 @@
                     <label for="{{ form.content.id_for_label }}">Your complaint:</label>
                     {{ form.content }}
                 </div>
-                <fieldset>
-                    <legend>Location Information</legend>
-                    <div class="form-group">
-                        {{ form.latitude.errors }}
-                        <label for="{{ form.latitude.id_for_label }}">Latitude:</label>
-                        {{ form.latitude }}
-                        {{ form.longitude.errors }}
-                        <label for="{{ form.longitude.id_for_label }}">Longitude</label>
-                        {{ form.longitude }}
-
-                        <button class="btn btn-primary" id="getLocation">This location</button>
-                    </div>
-                </fieldset>
+	                {{ form.latitude }}
+	                {{ form.longitude }}
+                </div>
                 <input class="btn btn-primary" type="submit" value="Submit" />
             </fieldset>
         </form>

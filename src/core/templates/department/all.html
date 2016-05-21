@@ -2,45 +2,75 @@
 {% load staticfiles %}
 
 {% block content %}
-    {% for dept in departments %}
-    <div class="col-md-4 col-sm-6 col-xs-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{{ dept.name }}</h3>
-            </div>
-            <div class="panel-body">
-                {{ dept.description }}
-            </div>
-        </div>
+	<div class="container">
+	    <div class="row">
+    	{% for dept, stats in departments %}
+    
+		    <div class="col-md-4 col-sm-6 col-xs-12">
+		        <div class="panel panel-info">
+		            <div class="panel-heading">
+		                <h3 class="panel-title">{{ dept.name }}</h3>
+		            </div>
+		            <div class="panel-body">
+		                {{ dept.description }}
+		            </div>
+		            <table class="table table-hover">
+		                <tbody>
+		                    <tr>
+		                        <td><strong>Total issues:</strong></td>
+		                        <td><strong>{{ stats.total }}</strong></td>
+		                    </tr>
+		                    <tr>
+		                        <td>Issues resolved:</td>
+		                        <td>{{ stats.resolved }}</td>
+		                    </tr>
+		                    <tr>
+		                        <td>Still to be resolved:</td>
+		                        <td>{{ stats.un_resolved }}</td>
+		                    </tr>
+		                </tbody>
+		            </table>
+		        </div>
+		    </div>
+	    {% empty %}
+	    
+	    <div class="alert alert-info">
+	    No departments to show
+	    </div>
+	    
+	    {% endfor 	%}
+	    </div>
     </div>
-    {% endfor %}
-    <hr>
-    <div class="row">
-        <div class="col-sm-6 col-xs-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Add new department</h3>
-                </div>
-                <div class="panel-body">
-                    <form class="form" action="{% url 'core:dept_save' %}" method="POST">
-                        {% csrf_token %}
-                        {{ dept_form.non_field_errors }}
-                        <div class="form-group">
-                            {{ dept_form.name.errors }}
-                            <label for="{{ dept_form.name.id_for_label }}">Name:</label>
-                            {{ dept_form.name }}
-                        </div>
-                        <div class="form-group">
-                            {{ dept_form.description.errors }}
-                            <label for="{{ dept_form.description.id_for_label }}">Description:</label>
-                            {{ dept_form.description }}
-                        </div>
-                        <div class="form-group">
-                            <button class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+    {% if dept_form %}
+    <div class="container">
+	    <div class="row">
+	        <div class="col-sm-6 col-xs-12">
+	            <div class="panel panel-default">
+	                <div class="panel-heading">
+	                    <h3 class="panel-title">Add new department</h3>
+	                </div>
+	                <div class="panel-body">
+	                    <form class="form" action="{% url 'core:dept_save' %}" method="POST">
+	                        {% csrf_token %}
+	                        {{ dept_form.non_field_errors }}
+	                        <div class="form-group">
+	                            {{ dept_form.name.errors }}
+	                            <label for="{{ dept_form.name.id_for_label }}">Name:</label>
+	                            {{ dept_form.name }}
+	                        </div>
+	                        <div class="form-group">
+	                            {{ dept_form.description.errors }}
+	                            <label for="{{ dept_form.description.id_for_label }}">Description:</label>
+	                            {{ dept_form.description }}
+	                        </div>
+	                        <div class="form-group">
+	                            <button class="btn btn-primary">Save</button>
+	                        </div>
+	                    </form>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
     </div>
+   	{% endif %}
 {% endblock %}

@@ -3,17 +3,21 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import json, django, sys, os
 import traceback, requests, platform
+from .configuration import parser
 
-sys.path.append('/home/ravi/projects/techngage/src')
+config  = parser.getConfigParser()
+access_token = config.get('TWITTER', 'access_token')
+access_token_secret = config.get('TWITTER', 'access_token_secret')
+consumer_key = config.get('TWITTER', 'consumer_key')
+consumer_secret = config.get('TWITTER', 'consumer_secret')
+
+project_path = config.get('PATH', 'project_path')
+
+sys.path.append(project_path)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'pgs.settings'
 django.setup()
 
 from core.models import Issue, IssueStatus
-
-access_token = '161195624-4zkp7cD4yb4tG3CGrmxg2M0Vbp9NNTElPkYvRH7B'
-access_token_secret = 'pBjyVXBl37HoMKgY6rzgZmkOYz5kHxaHsViBctByHzUp8'
-consumer_key = '8gMKCmw67gVqNFLS5q3ylgQB1'
-consumer_secret = '1LXPp4uhl9yhLqfSy7v4gI6um8J4og78JDZYpLmS6RYL9xZDa2'
 
 output_file = 'tracks.json'
 #output = open(output_file, 'a')
@@ -68,6 +72,7 @@ def runInBackground():
     auth.set_access_token(access_token, access_token_secret)
     stream = Stream(auth, l)
     stream.filter(track=['#pgsissue'])
+    print('Call returned')
 
 if __name__ == '__main__':
     runInBackground()

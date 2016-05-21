@@ -1,4 +1,6 @@
 {% load staticfiles %}
+{% load accounts 	%}
+
 <html lang="en">
     <head>
         <meta charset="utf-8">
@@ -25,24 +27,29 @@
                         <li><a href="{% url 'core:all' %}">All issues</a></li>
                         <li><a href="{% url 'core:dept_all' %}">Departments</a></li>
                         <li><a href="{% url 'core:dashboard_main' %}">Dashboard</a></li>
+                        {% loginstatus %}
                     </ul>
                 </div>
             </div>
         </nav>
-    <div class="container">
-        <div class="row">
-            {% block content %}
-            {% endblock %}
+        
+        <div class="container">
+            <div class="row">
+                {% block content %}
+                {% endblock %}
+            </div>
         </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <hr>
-            <footer>
-                <p>&copy;PGS </p>
-            </footer>
-        </div>
-    </div> <!-- /container -->
+
+        <hr>
+
+        <div class="container">
+            <div class="row">
+                <hr>
+                <footer>
+                    <p>&copy;PGS </p>
+                </footer>
+            </div>
+        </div> <!-- /container -->
 
         {% block scriptsPrepend %}
         {% endblock %}
