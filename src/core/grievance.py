@@ -82,7 +82,7 @@ def view(request, grievance_id):
     if request.method == 'GET':
         print('Grievance ID: ' + grievance_id)
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
-        if grievance.latitude and grievance.longitude and grievance_id > 0: 
+        if grievance.latitude and grievance.longitude and grievance.issue_id > 0: 
             getaddressfor.apply_async([grievance_id], queue = 'issuegeo')
             
         return render(request, 'grievance/view.html', {'grievance': grievance})
@@ -114,7 +114,7 @@ def review(request, grievance_id):
                 messageStatus = 'alert-danger'
         print('Grievance ID: ' + grievance_id)
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
-        if grievance.latitude and grievance.longitude and grievance_id > 0: 
+        if grievance.latitude and grievance.longitude and grievance.issue_id > 0: 
             getaddressfor.apply_async([grievance_id], queue = 'issuegeo')
             
         return render(request, 'grievance/review.html', {'grievance': grievance, 'statuses': IssueStatus.objects.all(),
