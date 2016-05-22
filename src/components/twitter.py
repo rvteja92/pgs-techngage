@@ -13,7 +13,7 @@ consumer_secret = config.get('TWITTER', 'consumer_secret')
 
 project_path = config.get('PATH', 'project_path')
 
-sys.path.append(project_path)
+#sys.path.append(project_path)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'pgs.settings'
 django.setup()
 
