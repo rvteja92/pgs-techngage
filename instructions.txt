@@ -1,0 +1,120 @@
+Instructions to run on Linux (Ubuntu 14.04 LTS)
+===============================================
+Installing system requirements
+------------------------------
+1. Make sure that python3 is installed. To install run 
+    $ sudo apt-get install python3
+2. Also install package 'libffi-dev'. This is required for rabbit-mq
+    $ sudo apt-get install libffi-dev
+3. Install pip3 with
+    $ sudo apt-get install python3-pip
+4. Install nginx with
+    $ sudo apt-get install nginx
+5. Install rabbit-mq with
+    $ sudo apt-get install rabbitmq-server
+6. Install postgresql with
+    $ sudo apt-get install postgresql postgresql-contrib
+
+Extract the source from zip or from the bitbucket repository. The directory structure should look like
+
+    project_root
+    |- docs/
+    |- dumps/
+    |- scripts/
+    |- src/
+    |- readme.md
+    |- requirements.txt
+
+-------------------------------------------------------------
+Setup database
+------------------------------------------------------------- 
+**To make things simpler with dumping use 'pgs' as database name, 'ravi' as username (password as you wish)
+
+$ sudo su - postgres
+$ psql
+> CREATE DATABASE <database_name>;
+> CREATE USER <db_user> WITH PASSWORD '<db_password>';
+> GRANT ALL PRIVILEGES ON DATABASE <database_name> TO <db_user>;
+> \q
+> exit
+
+Dump the data with (work from project_root directory)
+
+$ cp dumps/pgs.sql /tmp/pgsdumps.sql
+$ sudo su - postgres
+$ psql -U <db_user> <database_name> < /tmp/pgsdumps.sql
+$ exit 
+
+This will dump the data into database
+
+-------------------------------------------------------------
+
+Edit 'project_root/src/pgs/settings.py' and change database settings of <database_name>, <db_user> and <db_password> in lines 100, 102, 103.
+
+-------------------------------------------------------------
+
+
+**Before installing pip3 packages you might want to create a virtual environment and activate it
+
+Now install all the dependencies for the project with
+
+$ sudo pip3 install -r src/requirements.txt
+
+**Dont confuse with 'requirements.txt' file in 'project_root'
+
+From 'project_root/src' migrate the database with
+
+$ python3 manage.py makemigrations
+$ python3 manage.py migrate
+
+---------------------------------------------------------------
+Running gunicorn, celery and pgssocial
+---------------------------------------------------------------
+Rename file 'gunicorn.conf.template' in 'project_root/scripts' to 'gunicorn.conf'.
+Edit the file and now change values of 'setuid' and 'setgid' (line 7,8) from 'admin' to your username and groupname.
+Change 'chdir' (line 9) val to the 'project_root/src'
+Copy this file into '/etc/init/' directory with
+
+$ sudo cp scripts/gunicorn.conf /etc/init/
+
+Now run gunicorn with
+
+$ sudo service gunicorn start
+
+Perform same actions with 'pgssocial.conf.template' and 'celeryserver.conf.template' files. Run them with
+
+$ sudo service celeryserver start
+$ sudo service pgssocial start
+
+---------------------------------------------------------------
+Setup and run nginx as proxy
+---------------------------------------------------------------
+Rename the file 'pgs.conf.nginx.template' to 'pgs.conf'.
+
+Edit the line 8 with appropriate directory name '<project_root>/src'
+
+Copy it to '/etc/nginx/sites-available' with
+
+$ sudo cp pgs.conf /etc/nginx/sites-available
+$ cd /etc/nginx/site-enabled
+$ sudo ln -s ../sites-available/pgs.conf pgs.conf
+$ sudo rm ../sites-available/default-001.conf
+
+Restart nginx server with
+
+$ sudo service nginx restart
+
+--------------------------------------------------------------
+
+Now visit 'http://localhost' you should see the running website on you local system.
+
+Use username 'ravi' and password 'ravi' to login as normal user. Or register a new user.
+
+Use username 'admin' and password 'admin' to login as admin. You cannot directly register as an admin. 
+
+=============================================================
+
+Explore the features.
+
+To register a complaint via a tweet, tweet with hashtag "#pgsissue".
+
