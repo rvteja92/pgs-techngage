@@ -1,0 +1,11 @@
+description "Gunicorn application server handling myproject"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+setuid admin
+setgid admin
+chdir /home/admin/projects/techngage/src
+
+exec celery -A pgs worker -B -l info -Q issuegeo

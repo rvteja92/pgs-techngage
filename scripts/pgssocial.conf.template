@@ -1,0 +1,11 @@
+description "Social Interaction Tracker"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+setuid admin
+setuid admin
+chdir /home/admin/projects/techngage/src/
+
+exec python3 -m components.twitter

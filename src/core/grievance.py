@@ -54,7 +54,7 @@ def add(request):
                 return render(request, 'core/message.html', context)
             context = {
                     'alert_type': 'alert-success',
-                    'content': 'Your grievance has been registrated successfully!! Your grievance id is : ' + str(new_grievance.issue_id)
+                    'content': 'Your grievance has been registered successfully!! Your grievance id is : ' + str(new_grievance.issue_id)
                 }
             return render(request, 'core/message.html', context)
         else:
