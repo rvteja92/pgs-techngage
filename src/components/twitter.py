@@ -3,7 +3,7 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import json, django, sys, os
 import traceback, requests, platform
-from .configuration import parser
+from .geo.configuration import parser
 
 config  = parser.getConfigParser()
 access_token = config.get('TWITTER', 'access_token')
@@ -21,7 +21,7 @@ from core.models import Issue, IssueStatus
 
 output_file = 'tracks.json'
 #output = open(output_file, 'a')
-log = open('logs/tweepy.log', 'a')
+log = open('tweepy.log', 'a')
 print('Tracker ran with python - ' + platform.python_version(), file = log)
 
 class StdOutListener(StreamListener):
@@ -61,7 +61,7 @@ class StdOutListener(StreamListener):
                 traceback.print_exc()
             return True
         except Exception as e:
-            print('Unknown exception occured', file=log)
+            print('Unknown exception occurred', file=log)
     def on_error(self, status):
         print(status, file = log)
 

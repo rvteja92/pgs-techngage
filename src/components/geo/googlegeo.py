@@ -2,6 +2,7 @@ import googlemaps
 import logging
 
 from .configuration import parser
+import json
 
 
 config = parser.getConfigParser()
@@ -17,5 +18,5 @@ def getAddressObject(latitude, longitude):
         raise Exception
     return None
 
-def testLib():
-    print('Woo hoo!!! Check successful.')
+if __name__ == '__main__':
+    print(json.loads(getAddressObject("17.3612427", "78.50047959999999")))

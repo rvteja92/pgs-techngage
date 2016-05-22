@@ -13,7 +13,7 @@ django.setup()
 from core.models import Issue
 
 @app.task
-def getaddressfor(grievance_id):
+def getaddressfor(self, grievance_id):
     issue = Issue.objects.filter(issue_id=grievance_id).get()
     try:
         geoaddress = getAddressObject(issue.latitude, issue.longitude)
@@ -25,10 +25,12 @@ def getaddressfor(grievance_id):
                 logging.info('Address saved for grievance')
                 return True
             except Exception as e:
+                self.retry(countdown=1200, max_retries=2)
                 logging.error('Address determined but could not save object ' + str(e))
                 raise Exception()
             
     except Exception as e:
+        self.retry(countdown=1200, max_retries=2)
         raise Exception()
     
     return False
