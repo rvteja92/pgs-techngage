@@ -1,9 +1,0 @@
-description "Social Interaction Tracker"
-author "rvteja92@gmail.com"
-
-start on runlevel [2345]
-stop on runlevel [!2345]
-
-respawn
-
-exec python3 /home/admin/projects/techngage/src/sit/tracker.py

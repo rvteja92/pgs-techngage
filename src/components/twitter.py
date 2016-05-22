@@ -4,6 +4,7 @@ from tweepy import Stream
 import json, django, sys, os
 import traceback, requests, platform
 from .geo.configuration import parser
+import tweepy
 
 config  = parser.getConfigParser()
 access_token = config.get('TWITTER', 'access_token')
@@ -11,7 +12,6 @@ access_token_secret = config.get('TWITTER', 'access_token_secret')
 consumer_key = config.get('TWITTER', 'consumer_key')
 consumer_secret = config.get('TWITTER', 'consumer_secret')
 
-project_path = config.get('PATH', 'project_path')
 
 #sys.path.append(project_path)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'pgs.settings'
@@ -23,6 +23,8 @@ output_file = 'tracks.json'
 #output = open(output_file, 'a')
 log = open('tweepy.log', 'a')
 print('Tracker ran with python - ' + platform.python_version(), file = log)
+
+api = None
 
 class StdOutListener(StreamListener):
 
@@ -56,6 +58,9 @@ class StdOutListener(StreamListener):
             try:
                 grievance.save()
                 print('Saved')
+                user = tweet['user']['screen_name']
+                reply = '@%s Your issue has been registered with id %s' %(user, grievance.issue_id)
+                s   =   api.update_status(reply, tweet['id'])
             except Exception as e:
                 print('Saving to database failed', file=log)
                 traceback.print_exc()
@@ -67,9 +72,11 @@ class StdOutListener(StreamListener):
 
 def runInBackground():
     #with daemon.DaemonContext():
+    global api
     l = StdOutListener()
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
+    api = tweepy.API(auth)
     stream = Stream(auth, l)
     stream.filter(track=['#pgsissue'])
     print('Call returned')
