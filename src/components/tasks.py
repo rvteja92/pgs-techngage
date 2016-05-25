@@ -12,7 +12,7 @@ django.setup()
 
 from core.models import Issue
 
-@app.task
+@app.task(bind=True)
 def getaddressfor(self, grievance_id):
     issue = Issue.objects.filter(issue_id=grievance_id).get()
     try:

@@ -41,8 +41,7 @@ def add(request):
                 
                 if new_grievance.latitude and new_grievance.longitude:
                     # All google geo tasks for Issues go into queue 'issuegeo'
-                    getaddressfor.apply_async([new_grievance.issue_id], queue = 'issuegeo')
-#                     new_grievance.geo_address = googlegeo.getAddressObject(new_grievance.latitude, new_grievance.longitude)
+                    getaddressfor.apply_async([new_grievance.issue_id,], queue = 'issuegeo')
                                         
             except Exception as e:
                 context = {
@@ -85,7 +84,7 @@ def view(request, grievance_id):
         print('Grievance ID: ' + grievance_id)
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
         if grievance.latitude and grievance.longitude: 
-            getaddressfor.apply_async([grievance_id], queue = 'issuegeo')
+            getaddressfor.apply_async([grievance_id,], queue = 'issuegeo')
             
         return render(request, 'grievance/view.html', {'grievance': grievance})
     else:
@@ -118,7 +117,7 @@ def review(request, grievance_id):
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
         print(int(grievance_id), file=log)
         if grievance.latitude and grievance.longitude: 
-            getaddressfor.apply_async([grievance_id], queue = 'issuegeo')
+            getaddressfor.apply_async([grievance_id,], queue = 'issuegeo')
             
         return render(request, 'grievance/review.html', {'grievance': grievance, 'statuses': IssueStatus.objects.all(),
                                     'departments': Department.objects.all(), 'message': message, 'messageStatus': messageStatus})

@@ -40,7 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-#    'crispy_forms',
+    'crispy_forms',
     'core',
     'rest_framework',
     'accounts',
@@ -132,17 +132,21 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'formatters': {
-        'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
-        },
         'simple': {
-            'format': '%(levelname)s %(message)s'
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+            'datefmt' : '%d/%b/%Y %H:%M:%S'
+        },
+        'verbose': {
+            'format' : '[%(asctime)s] %(levelname)s [%(name)s.%(funcname)s:%(lineno)d] %(message)s',
+            'datefmt' : '%d/%b/%Y %H:%M:%S'
         },
     },
     'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
@@ -180,13 +184,8 @@ LOGGING = {
         },
     },
     'loggers': {
-        'accounts': {
+        '': {
             'handlers': ['console', 'debug', 'events', 'info', 'errors'],
-            'level': 'DEBUG',
-        },
-        'root': {
-            'handlers': ['console', 'debug', 'events', 'info', 'errors'],
-            'level': 'DEBUG',
         },
     }
 }
