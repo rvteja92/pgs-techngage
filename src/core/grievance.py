@@ -23,7 +23,7 @@ log = open('e.log', 'a')
 def add(request):
     if not request.user.is_authenticated():
         return render(request, 'core/notloggedin.html')
-    
+
     if request.method == 'POST':
         print('We got a POST request for grievance')
         form = GrievanceForm(request.POST)
@@ -32,17 +32,17 @@ def add(request):
             new_grievance = form.save(commit=False)
             #set status to "new"
             new_grievance.status =  IssueStatus.objects.filter(id=1).get()
-            
+
             #TODO set user to "current user"
             new_grievance.user  = request.user
             try:
                 #save the grievance
                 new_grievance.save()
-                
+
                 if new_grievance.latitude and new_grievance.longitude:
                     # All google geo tasks for Issues go into queue 'issuegeo'
                     getaddressfor.apply_async([new_grievance.issue_id,], queue = 'issuegeo')
-                                        
+
             except Exception as e:
                 context = {
                         'alert_type': 'alert-danger',
@@ -67,14 +67,14 @@ def allIssues(request):
         page_no = int(request.GET.get('page', '1'))
         all_issues = Issue.objects.all().order_by('issue_id')
         paginator = Paginator(all_issues, 10)
-        
+
         try:
             issues  = paginator.page(page_no)
         except PageNotAnInteger:
             issues  = paginator.page(1)
         except EmptyPage:
             issues  = paginator.page(paginator.num_pages)
-            
+
         return render(request, 'grievance/all.html', {'all_issues': issues })
     else:
         raise Http404()
@@ -83,9 +83,9 @@ def view(request, grievance_id):
     if request.method == 'GET':
         print('Grievance ID: ' + grievance_id)
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
-        if grievance.latitude and grievance.longitude: 
+        if grievance.latitude and grievance.longitude:
             getaddressfor.apply_async([grievance_id,], queue = 'issuegeo')
-            
+
         return render(request, 'grievance/view.html', {'grievance': grievance})
     else:
         raise Http404()
@@ -116,14 +116,14 @@ def review(request, grievance_id):
         print('Grievance ID: ' + grievance_id)
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
         print(int(grievance_id), file=log)
-        if grievance.latitude and grievance.longitude: 
+        if grievance.latitude and grievance.longitude:
             getaddressfor.apply_async([grievance_id,], queue = 'issuegeo')
-            
+
         return render(request, 'grievance/review.html', {'grievance': grievance, 'statuses': IssueStatus.objects.all(),
                                     'departments': Department.objects.all(), 'message': message, 'messageStatus': messageStatus})
     raise PermissionDenied
-        
-        
+
+
 def departments(request):
     if request.method == 'GET':
         departments = Department.objects.all()
@@ -139,7 +139,7 @@ def departments(request):
                                         'resolved'  : resolved,
                                         'un_resolved'   : un_resolved,
                                     }))
-        
+
         if authorization.isAdmin(request):
             dept_form   = DepartmentForm()
         else:
@@ -169,7 +169,7 @@ def dashboard(request):
         cant    = Issue.objects.filter(status=8).count()
         un_resolved = total - resolved - spam - cant
         context = {
-            'total': total,
+            'total': total - spam - cant,
             'resolved': resolved,
             'un_resolved': un_resolved,
         }
@@ -182,7 +182,7 @@ def track(request, grievance_id):
         grievance = get_object_or_404(Issue, issue_id=grievance_id)
         status  = grievance.status
         return render(request, 'grievance/track.html', { 'grievance': grievance, 'status': status })
-        
+
     raise Http404()
 
 class IssueViewSet(viewsets.ModelViewSet):
