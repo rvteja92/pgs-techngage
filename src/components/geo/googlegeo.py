@@ -1,9 +1,10 @@
 import googlemaps
 import logging
 from django.conf import settings
-import json
+import json, os
 
-api_key = settings.GOOGLE_KEY
+
+api_key = os.environ.get('GOOGLE_KEY')
 
 def getAddressObject(latitude, longitude):
     try:
