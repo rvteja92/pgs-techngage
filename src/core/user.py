@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager, AbstractBaseUser
 )
+import logging
 
 class User(BaseUserManager):
     user_id  = models.AutoField(primary_key=True)
@@ -13,3 +14,10 @@ class User(BaseUserManager):
 
     def __str__(self):
         return "[Username: " + self.username + ", Role: " + self.role_name + "]"
+
+    def has_perm(self, task):
+        logging.debug('Permission check for user')
+        if task == 'review_issue':
+            if role.roleid == 2:
+                return False
+            return False

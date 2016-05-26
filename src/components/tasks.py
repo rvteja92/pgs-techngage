@@ -4,6 +4,8 @@ from .geo.googlegeo import getAddressObject
 import os, sys, django
 import logging
 from pgs.celeryapp import app
+
+
 project_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
 
 sys.path.append(project_path)
@@ -12,14 +14,24 @@ django.setup()
 
 from core.models import Issue
 
+logger = logging.getLogger('celerylogger')
+
 @app.task(bind=True)
 def getaddressfor(self, grievance_id):
+
+    #logging configuration
+    # global logger
+    # logfile = 'logs/celery.log'
+    # handler = logging.FileHandler(logfile, 'a')
+    # formatter = logging.Formatter('%(asctime)s - %(message)s')
+
+    #business logic
     issue = Issue.objects.filter(issue_id=grievance_id).get()
     try:
         geoaddress = getAddressObject(issue.latitude, issue.longitude)
         if geoaddress:
             issue.geo_address = geoaddress
-            
+
             try:
                 issue.save()
                 logging.info('Address saved for grievance')
@@ -28,10 +40,9 @@ def getaddressfor(self, grievance_id):
                 self.retry(countdown=1200, max_retries=2)
                 logging.error('Address determined but could not save object ' + str(e))
                 raise Exception()
-            
+
     except Exception as e:
         self.retry(countdown=1200, max_retries=2)
         raise Exception()
-    
+
     return False
-        

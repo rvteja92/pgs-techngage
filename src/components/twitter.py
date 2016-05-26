@@ -3,32 +3,34 @@ from tweepy import OAuthHandler
 from tweepy import Stream
 import json, django, sys, os
 import traceback, requests, platform
-from .geo.configuration import parser
-import tweepy
-
-config  = parser.getConfigParser()
-access_token = config.get('TWITTER', 'access_token')
-access_token_secret = config.get('TWITTER', 'access_token_secret')
-consumer_key = config.get('TWITTER', 'consumer_key')
-consumer_secret = config.get('TWITTER', 'consumer_secret')
+from django.conf import settings
+import tweepy, logging
 
 
-#sys.path.append(project_path)
 os.environ['DJANGO_SETTINGS_MODULE'] = 'pgs.settings'
 django.setup()
 
+
+access_token = settings.TWITTER_ACCESS_TOKEN
+access_token_secret = settings.TWITTER_ACCESS_TOKEN_SECRET
+consumer_key = settings.TWITTER_CONSUMER_KEY
+consumer_secret = settings.TWITTER_CONSUMER_SECRET
+
 from core.models import Issue, IssueStatus
 
-output_file = 'tracks.json'
-#output = open(output_file, 'a')
-log = open('tweepy.log', 'a')
-print('Tracker ran with python - ' + platform.python_version(), file = log)
-
 api = None
+logger = logging.getLogger('twitter_logger')
+
+# logfile = 'logs/twitter.log'
+# handler = logging.FileHandler(logfile, 'a')
+# formatter = logging.Formatter('%(asctime)s - %(message)s')
+
+logger.info('Running twitter with python-' + platform.python_version())
 
 class StdOutListener(StreamListener):
 
     def on_data(self, data):
+        logger.info('Inside tweet issue')
         try:
             tweet   = json.loads(data)
             title   = tweet['text']
@@ -41,34 +43,31 @@ class StdOutListener(StreamListener):
                     }
                 ).text
             if not sentiment:
-                print('Sentiment could not be determined', file = log)
+                logger.info('Sentiment could not be determined [Text: ' + title +']')
                 return True
             sentiJson   = json.loads(sentiment)
             if sentiJson['label'] != 'neg':
-                print('Sentiment is not negative', file = log)
+                logger.info('Sentiment is not negative')
                 return True
 
-            print('Sentiment is negative', file = log)
-            # if coord:
-            # print('Text: ' + title, end='\n')
-            # print('Geo : ' + str(geo), end='\n')
-            #     print('Coord : ' + str(coord), end='\n')
+            logger.info('Sentiment is negative')
+
             grievance = Issue(title=title, content=title)
             grievance.status = IssueStatus.objects.filter(id=1).get()
             try:
                 grievance.save()
-                print('Saved')
+                logger.info('Saved')
                 user = tweet['user']['screen_name']
                 reply = '@%s Your issue has been registered with id %s' %(user, grievance.issue_id)
                 s   =   api.update_status(reply, tweet['id'])
             except Exception as e:
-                print('Saving to database failed', file=log)
+                logger.exception('Saving to database failed: %s', e)
                 traceback.print_exc()
             return True
         except Exception as e:
-            print('Unknown exception occurred', file=log)
+            logger.exception('Unknown exception occurred: %s', e)
     def on_error(self, status):
-        print(status, file = log)
+        logger.error("Error: " + str(status))
 
 def runInBackground():
     #with daemon.DaemonContext():
@@ -79,7 +78,7 @@ def runInBackground():
     api = tweepy.API(auth)
     stream = Stream(auth, l)
     stream.filter(track=['#pgsissue'])
-    print('Call returned')
+    logger.info('Call returned')
 
 if __name__ == '__main__':
     runInBackground()

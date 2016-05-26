@@ -15,6 +15,12 @@ class IssueStatus(models.Model):
     status = models.CharField(max_length=40)
 
 class Issue(models.Model):
+
+    class Meta:
+        permissions = (
+            ('review_issue', 'Can change the status of issue'),
+        )
+
     issue_id    = models.AutoField(primary_key=True)
     status  = models.ForeignKey(IssueStatus)
     title   = models.CharField(max_length=256)
@@ -26,7 +32,7 @@ class Issue(models.Model):
     category    = models.ForeignKey(Department, null=True)
 
     """
-    TODO Make user compulsory - once user models are generated from tweets 
+    TODO Make user compulsory - once user models are generated from tweets
     """
     user    = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True)
 

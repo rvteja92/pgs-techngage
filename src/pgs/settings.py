@@ -12,24 +12,126 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from .configuration import parser
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-config = parser.getConfigParser('main.cfg')
+def getKey(key):
+    return os.environ.get(key)
+
+
+
+# CELERY configuration
+
+CELERYD_HIJACK_ROOT_LOGGER = False
+
+def setup_task_logger(logger=None, **kwargs):
+    logger.propagate = 1
+
+from celery import signals
+signals.setup_logging.connect(lambda **kwargs: True)
+signals.after_setup_task_logger.connect(setup_task_logger)
+
+BROKER_URL = 'amqp://'
+CELERY_RESULT_BACKEND = 'amqp://'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT=['json']
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_ENABLE_UTC = True
+# CELERY configuration ends here
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config.get('SETTINGS', 'secret_key')
+SECRET_KEY = getKey('DJANGO_SECRET')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config.getboolean('SETTINGS', 'debug')
+DEBUG = False
 
-ALLOWED_HOSTS = []
+environ = getKey('ENVIRONMENT')
+if environ == 'development':
+    DEBUG = True
+
+ALLOWED_HOSTS = [
+    getKey('HOST_NAME'),
+]
 
 AUTH_USER_MODEL = 'accounts.User'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s] %(levelname)s %(message)s',
+            'datefmt' : '%d/%b/%Y %H:%M:%S'
+        },
+        'verbose': {
+            'format' : '[%(asctime)s] %(levelname)s [%(name)s.%(funcname)s:%(lineno)d] %(message)s',
+            'datefmt' : '%d/%b/%Y %H:%M:%S'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'debug': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/debug.log',
+            'formatter': 'verbose'
+        },
+        'events': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/events.log',
+            'formatter': 'verbose'
+        },
+        'info': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/info.log',
+            'formatter': 'verbose'
+        },
+        'errors': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/errors.log',
+            'formatter': 'verbose'
+        },
+        'twitter': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/twitter.log',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console', 'debug', 'events', 'info', 'errors'],
+        },
+        'twitter_logger': {
+            'handlers': ['twitter', 'console'],
+        }
+    }
+}
+
+from logging.config import dictConfig
+dictConfig(LOGGING)
+
 
 # Application definition
 
@@ -97,10 +199,10 @@ WSGI_APPLICATION = 'pgs.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': 'pgs',
+        'NAME': getKey('DBNAME'),
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'USER': 'ravi',
-        'PASSWORD': 'ravi',
+        'USER': getKey('DBUSER'),
+        'PASSWORD': getKey('DBPASSWORD'),
     }
 }
 
@@ -130,71 +232,12 @@ STATICFILES_DIRS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-    'formatters': {
-        'simple': {
-            'format': '[%(asctime)s] %(levelname)s %(message)s',
-            'datefmt' : '%d/%b/%Y %H:%M:%S'
-        },
-        'verbose': {
-            'format' : '[%(asctime)s] %(levelname)s [%(name)s.%(funcname)s:%(lineno)d] %(message)s',
-            'datefmt' : '%d/%b/%Y %H:%M:%S'
-        },
-    },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'debug': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/debug.log',
-            'formatter': 'verbose'
-        },
-        'events': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/events.log',
-            'formatter': 'verbose'
-        },
-        'info': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/info.log',
-            'formatter': 'verbose'
-        },
-        'errors': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': 'logs/errors.log',
-            'formatter': 'verbose'
-        },
-    },
-    'loggers': {
-        '': {
-            'handlers': ['console', 'debug', 'events', 'info', 'errors'],
-        },
-    }
-}
+# Secrets start here
+# Google
+GOOGLE_KEY = getKey('GOOGLE_KEY')
 
-# CELERY configuration
-BROKER_URL = 'amqp://'
-CELERY_RESULT_BACKEND = 'amqp://'
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_ACCEPT_CONTENT=['json']
-CELERY_TIMEZONE = 'Asia/Kolkata'
-CELERY_ENABLE_UTC = True
+# Twitter
+TWITTER_ACCESS_TOKEN = getKey('TWITTER_ACCESS_TOKEN')
+TWITTER_ACCESS_TOKEN_SECRET = getKey('TWITTER_ACCESS_TOKEN_SECRET')
+TWITTER_CONSUMER_KEY = getKey('TWITTER_CONSUMER_KEY')
+TWITTER_CONSUMER_SECRET = getKey('TWITTER_CONSUMER_SECRET')
