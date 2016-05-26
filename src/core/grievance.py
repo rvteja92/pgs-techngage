@@ -167,9 +167,10 @@ def dashboard(request):
         resolved    = Issue.objects.filter(status=5).count()
         spam    = Issue.objects.filter(status=6).count()
         cant    = Issue.objects.filter(status=8).count()
-        un_resolved = total - resolved - spam - cant
+        total   = total - spam - cant
+        un_resolved = total - resolved
         context = {
-            'total': total - spam - cant,
+            'total': total,
             'resolved': resolved,
             'un_resolved': un_resolved,
         }
