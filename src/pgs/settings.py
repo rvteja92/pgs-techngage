@@ -49,12 +49,16 @@ SECRET_KEY = getKey('DJANGO_SECRET')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+hostname = getKey('HOST_NAME')
+
 environ = getKey('ENVIRONMENT')
 if environ == 'development':
     DEBUG = True
+    hostname = 'localhost.pgs.com'
+
 
 ALLOWED_HOSTS = [
-    getKey('HOST_NAME'),
+    hostname,
 ]
 
 AUTH_USER_MODEL = 'accounts.User'

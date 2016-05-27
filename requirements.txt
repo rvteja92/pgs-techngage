@@ -12,6 +12,7 @@ django-crispy-forms
 django-guardian
 Celery
 librabbitmq
+gunicorn
 
 other
 =====

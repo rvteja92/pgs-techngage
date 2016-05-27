@@ -6,6 +6,47 @@ stop on runlevel [!2345]
 respawn
 setuid admin
 setgid admin
+
+
+#Set environment variables
+
+env DJANGO_SECRET='secret_django'
+export DJANGO_SECRET
+
+#Environment settings
+env ENVIRONMENT='development'
+export ENVIRONMENT
+env PROJECT_SRC_PATH='/path/to/techngage/src'
+export PROJECT_SRC_PATH
+env HOST_NAME='www.yourdomain.in'
+export HOST_NAME
+
+#Database settings
+env DBNAME='database'
+export DBNAME
+env DBUSER='username'
+export DBUSER
+env DBPASSWORD='password'
+export DBPASSWORD
+
+#API keys
+
+#Google keys
+env GOOGLE_KEY='google geolocation key'
+export GOOGLE_KEY
+
+
+#Twitter keys
+env TWITTER_ACCESS_TOKEN='twitter access token'
+export TWITTER_ACCESS_TOKEN
+env TWITTER_ACCESS_TOKEN_SECRET='twitter access token secret'
+export TWITTER_ACCESS_TOKEN_SECRET
+env TWITTER_CONSUMER_KEY='consumer key'
+export TWITTER_CONSUMER_KEY
+env TWITTER_CONSUMER_SECRET='consumer secret'
+export TWITTER_CONSUMER_SECRET
+
+
 chdir /home/admin/projects/techngage/src
 
 exec celery -A pgs worker -B -l info -Q issuegeo
