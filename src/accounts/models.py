@@ -29,7 +29,7 @@ class User(AbstractBaseUser):
     userid  = models.AutoField(primary_key=True)
     username    = models.CharField(max_length=40, unique=True)
     role    = models.ForeignKey(UserRole)
-    
+
     objects = UserManager()
 
     USERNAME_FIELD = 'username'

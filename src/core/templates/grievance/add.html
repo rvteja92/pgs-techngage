@@ -18,6 +18,8 @@
                     <label for="{{ form.content.id_for_label }}">Your complaint:</label>
                     {{ form.content }}
                 </div>
+                <div class="form-group">
+                    <div id="pickerMap" style="width: 500px; height: 400px;"></div>
 	                {{ form.latitude }}
 	                {{ form.longitude }}
                 </div>
@@ -28,5 +30,7 @@
 {% endblock %}
 
 {% block scriptsAppend %}
+    <script type="text/javascript" src='http://maps.google.com/maps/api/js?sensor=false&libraries=places'></script>
+    <script type="text/javascript" src="{% static 'js/locationpicker.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/geo.js' %}"></script>
 {% endblock %}

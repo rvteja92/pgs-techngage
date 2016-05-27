@@ -1,3 +1,5 @@
+var json_coords = { latitude: 17.384835549807114, longitude: 78.48769617080688 };
+
 $(document).ready(function(){
     init();
 });
@@ -5,6 +7,14 @@ $(document).ready(function(){
 function init()
 {
     getLocation();
+    $('#pickerMap').locationpicker({
+        location: { latitude: json_coords.latitude, longitude: json_coords.longitude },
+        radius: 50,
+        inputBinding:{
+            latitudeInput: $('#latitude'),
+            longitudeInput: $('#longitude')
+        }
+    });
 }
 
 function getLocation()
@@ -16,8 +26,7 @@ function getLocation()
 
     function getPosition(pos)
     {
-        $('body').find('#latitude').val(pos.coords.latitude);
-        $('body').find('#longitude').val(pos.coords.longitude);
+        json_coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
     }
 
     function handleError(error)
