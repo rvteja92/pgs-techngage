@@ -2,7 +2,19 @@ var json_coords = { latitude: 17.384835549807114, longitude: 78.48769617080688 }
 
 $(document).ready(function(){
     init();
+    $('#mylocation').on('click',function() {
+      myLocationOnMap();
+    });
 });
+
+function myLocationOnMap()
+{
+    getLocation();
+    $('#latitude').val(json_coords.latitude);
+    $('#longitude').val(json_coords.longitude);
+    $('#latitude').val().trigger('change');
+    $('#longitude').trigger('change');
+}
 
 function init()
 {
@@ -13,7 +25,8 @@ function init()
         inputBinding:{
             latitudeInput: $('#latitude'),
             longitudeInput: $('#longitude')
-        }
+        },
+        enableAutocomplete: true
     });
 }
 
