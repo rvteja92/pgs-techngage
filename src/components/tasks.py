@@ -4,7 +4,7 @@ from .geo.googlegeo import getAddressObject
 import os, sys, django
 import logging
 from pgs.celeryapp import app
-
+from .twitter import notifyUpdates
 
 project_path = os.path.dirname(os.path.abspath(__file__)) + '/../'
 
@@ -15,6 +15,7 @@ django.setup()
 from core.models import Issue
 
 logger = logging.getLogger('celerylogger')
+
 
 @app.task(bind=True)
 def getaddressfor(self, grievance_id):
@@ -45,4 +46,21 @@ def getaddressfor(self, grievance_id):
         self.retry(countdown=1200, max_retries=2)
         raise Exception()
 
+    return False
+
+@app.task(bind=True)
+def notifyStatus(self, message, grievance_id):
+    grievance   = Issue.objects.filter(issue_id=grievance_id).get()
+    handle  = grievance.twitter_handle
+    reply_id = grievance.tweet['id']
+    print('Reply to id ' + str(reply_id))
+    if handle:
+        reply = notifyUpdates(handle, message, reply_id)
+        if reply:
+            logger.info('Status notified with twitter')
+            print('Status notified with twitter')
+            return True
+        else:
+            logger.info('Failed to notify with twitter')
+            print('Failed to notify with twitter')
     return False

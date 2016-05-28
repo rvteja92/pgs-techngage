@@ -100,7 +100,12 @@ def review(request, grievance_id):
             category = request.POST['category_id']
             try:
                 update = Issue.objects.filter(issue_id=issue).get()
-                update.status = IssueStatus.objects.filter(id=status).get()
+                new_status = IssueStatus.objects.filter(id=status).get()
+                if update.status != status:
+                    print('Inside status tweet', file = log)
+                    message = 'Your grievance with id ' + str(update.issue_id) + ' has been maked as ' + new_status.status
+                    notifyStatus.apply_async((message, issue), queue = 'twitternotifications')
+                update.status = new_status
                 if int(category) > 0:
                     update.category = Department.objects.filter(dept_id=category).get()
                 else:

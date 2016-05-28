@@ -19,6 +19,10 @@ consumer_secret = settings.TWITTER_CONSUMER_SECRET
 from core.models import Issue, IssueStatus
 
 api = None
+auth = OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+api = tweepy.API(auth)
+
 logger = logging.getLogger('twitter_logger')
 
 # logfile = 'logs/twitter.log'
@@ -30,12 +34,14 @@ logger.info('Running twitter with python-' + platform.python_version())
 class StdOutListener(StreamListener):
 
     def on_data(self, data):
+        print('Inside tweet issue')
         logger.info('Inside tweet issue')
         try:
             tweet   = json.loads(data)
             title   = tweet['text']
             geo     = tweet['geo']
             coord   = tweet['coordinates']
+            user = tweet['user']['screen_name']
             sentiment   = requests.post(
                 'http://text-processing.com/api/sentiment/',
                 data = {
@@ -48,16 +54,20 @@ class StdOutListener(StreamListener):
             sentiJson   = json.loads(sentiment)
             if sentiJson['label'] != 'neg':
                 logger.info('Sentiment is not negative')
+                print('Sentiment is not negative')
                 return True
 
             logger.info('Sentiment is negative')
+            print('Sentiment is negative')
 
+            print('User handle: @' + user)
             grievance = Issue(title=title, content=title)
+            grievance.twitter_handle = '@' + user
             grievance.status = IssueStatus.objects.filter(id=1).get()
+            grievance.tweet = tweet
             try:
                 grievance.save()
                 logger.info('Saved')
-                user = tweet['user']['screen_name']
                 reply = '@%s Your issue has been registered with id %s' %(user, grievance.issue_id)
                 s   =   api.update_status(reply, tweet['id'])
             except Exception as e:
@@ -73,12 +83,25 @@ def runInBackground():
     #with daemon.DaemonContext():
     global api
     l = StdOutListener()
-    auth = OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_token, access_token_secret)
-    api = tweepy.API(auth)
+    # auth = OAuthHandler(consumer_key, consumer_secret)
+    # auth.set_access_token(access_token, access_token_secret)
+    # api = tweepy.API(auth)
     stream = Stream(auth, l)
     stream.filter(track=['#pgsissue'])
     logger.info('Call returned')
+
+def notifyUpdates(handle, message, reply_id):
+    reply   = handle + ' ' + message
+    print('Twitter reply: ' + reply + ' to ' + str(reply_id))
+
+    try:
+        s   = api.update_status(reply, reply_id)
+        return True
+    except Exception as e:
+        logger.exception('Failed to notify via twitter: %s', e)
+        traceback.print_exc()
+    return False
+
 
 if __name__ == '__main__':
     runInBackground()

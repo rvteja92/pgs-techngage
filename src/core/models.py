@@ -29,6 +29,8 @@ class Issue(models.Model):
     latitude    = models.CharField(max_length=20, blank=True)
     longitude   = models.CharField(max_length=20, blank=True)
     geo_address     = JSONField(blank=True)
+    twitter_handle  = models.CharField(max_length=20, blank=True)
+    tweet   = JSONField(blank=True)
     category    = models.ForeignKey(Department, null=True)
 
     """

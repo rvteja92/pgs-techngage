@@ -49,4 +49,4 @@ export TWITTER_CONSUMER_SECRET
 
 chdir /home/admin/projects/techngage/src
 
-exec celery -A pgs worker -B -l info -Q issuegeo
+exec celery -A pgs worker -B -l info -Q issuegeo,twitternotifications
