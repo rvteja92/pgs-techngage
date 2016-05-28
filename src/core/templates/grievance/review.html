@@ -17,13 +17,13 @@
         </ul>
         {% if grievance.geo_address %}
         <div class="panel-body">
-            <div class="col-sm-6">
+            <div class="col-sm-3">
                 <strong>Address:</strong><br>
                 {% for addr in grievance.geo_address.0.address_components %}
                     {{ addr.long_name }}<br>
                 {% endfor %}
             </div>
-            <div class="col-sm-4">
+            <div class="col-sm-8">
                 <div id="pickerMap" style="width: 800px; height: 300px;"></div>
             </div>
         </div>
